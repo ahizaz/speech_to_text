@@ -11,7 +11,6 @@ class SpeechController extends GetxController {
   final addressController = TextEditingController();
   final emailController = TextEditingController();
 
-  // কোন TextField সিলেক্টেড সেটা ট্র্যাক করার জন্য
   Rx<TextEditingController?> selectedField = Rx<TextEditingController?>(null);
 
   @override
@@ -44,8 +43,8 @@ class SpeechController extends GetxController {
       },
       listenMode: stt.ListenMode.dictation,
       pauseFor: const Duration(seconds: 10),
-      listenFor: const Duration(minutes: 5), // long duration = stop না করা পর্যন্ত চলবে
-      localeId: "en_US", // চাইলে "bn_BD"
+      listenFor: const Duration(minutes: 5),
+      localeId: "en_US", 
     );
   }
 

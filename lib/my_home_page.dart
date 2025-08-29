@@ -13,7 +13,7 @@ class SpeechToTextScreen extends StatelessWidget {
       controller: textController,
       decoration: InputDecoration(labelText: label),
       onTap: () {
-        controller.selectedField.value = textController; // যেটা tap হবে সেটা সিলেক্টেড
+        controller.selectedField.value = textController;
       },
     );
   }
@@ -33,7 +33,7 @@ class SpeechToTextScreen extends StatelessWidget {
             _buildTextField("Email", controller.emailController),
             const Spacer(),
 
-            // ✅ শুধু ১টা Mic button
+       
             Obx(() => FloatingActionButton(
                   onPressed: () {
                     if (controller.isListening.value) {
