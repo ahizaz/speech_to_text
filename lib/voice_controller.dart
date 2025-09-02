@@ -181,13 +181,13 @@ class SpeechController extends GetxController {
 
     await _speech.listen(
       onResult: (result) {
-        if (result.finalResult && result.confidence > 0.5) {
+        if (result.finalResult && result.confidence > 0.75) {
           String processedText = _processText(result.recognizedWords);
           _updateSelectedField(processedText);
         }
       },
       listenMode: stt.ListenMode.dictation,
-      pauseFor: const Duration(seconds: 6), // Increased pause
+      pauseFor: const Duration(seconds: 10), // Increased pause
       listenFor: const Duration(minutes: 10),
       localeId: selectedLocale.value,
       partialResults: true,
@@ -202,37 +202,40 @@ class SpeechController extends GetxController {
   }
 
   // Improved text processor with corrections
-  String _processText(String text) {
-    String processed = text;
+String _processText(String text) {
+  String processed = text;
 
-    // Numbers
-    processed = processed
-        .replaceAll(RegExp(r'\bone\b', caseSensitive: false), '1')
-        .replaceAll(RegExp(r'\btwo\b', caseSensitive: false), '2')
-        .replaceAll(RegExp(r'\bto\b', caseSensitive: false), '2')
-        .replaceAll(RegExp(r'\bthree\b', caseSensitive: false), '3')
-        .replaceAll(RegExp(r'\bfour\b', caseSensitive: false), '4')
-        .replaceAll(RegExp(r'\bfive\b', caseSensitive: false), '5')
-        .replaceAll(RegExp(r'\bsix\b', caseSensitive: false), '6')
-        .replaceAll(RegExp(r'\bseven\b', caseSensitive: false), '7')
-        .replaceAll(RegExp(r'\beight\b', caseSensitive: false), '8')
-        .replaceAll(RegExp(r'\bnine\b', caseSensitive: false), '9')
-        .replaceAll(RegExp(r'\bzero\b', caseSensitive: false), '0');
-
-    // Slash / by
-    processed = processed
-        .replaceAll(RegExp(r'\bslash\b', caseSensitive: false), '/')
-        .replaceAll(RegExp(r'\bby\b', caseSensitive: false), '/')
-        .replaceAll(RegExp(r'\s*/\s*'), '/'); // clean spaces
-
-    // Handle commas
-    processed = processed.replaceAll(RegExp(r'\s*,\s*'), ', ');
-
-    // Clean double spaces
-    processed = processed.replaceAll(RegExp(r'\s+'), ' ');
-
-    return processed.trim();
+  // Noise filter (only allow numbers, letters, @, /, . , , - and spaces)
+  final allowed = RegExp(r'^[a-zA-Z0-9@./,\s-]+$');
+  if (!allowed.hasMatch(processed)) {
+    return ""; // discard noise
   }
+
+  // Numbers
+  processed = processed
+      .replaceAll(RegExp(r'\bone\b', caseSensitive: false), '1')
+      .replaceAll(RegExp(r'\btwo\b', caseSensitive: false), '2')
+      .replaceAll(RegExp(r'\bto\b', caseSensitive: false), '2')
+      .replaceAll(RegExp(r'\bthree\b', caseSensitive: false), '3')
+      .replaceAll(RegExp(r'\bfour\b', caseSensitive: false), '4')
+      .replaceAll(RegExp(r'\bfive\b', caseSensitive: false), '5')
+      .replaceAll(RegExp(r'\bsix\b', caseSensitive: false), '6')
+      .replaceAll(RegExp(r'\bseven\b', caseSensitive: false), '7')
+      .replaceAll(RegExp(r'\beight\b', caseSensitive: false), '8')
+      .replaceAll(RegExp(r'\bnine\b', caseSensitive: false), '9')
+      .replaceAll(RegExp(r'\bzero\b', caseSensitive: false), '0');
+
+  // Slash
+  processed = processed
+      .replaceAll(RegExp(r'\bslash\b', caseSensitive: false), '/')
+      .replaceAll(RegExp(r'\bby\b', caseSensitive: false), '/')
+      .replaceAll(RegExp(r'\s*/\s*'), '/');
+
+  // Commas
+  processed = processed.replaceAll(RegExp(r'\s*,\s*'), ', ');
+
+  return processed.trim();
+}
 
   void _updateSelectedField(String text) {
     final field = selectedField.value;
